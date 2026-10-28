@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao dịch theo nến H4 - Nền tảng Học Price Action & 50 Mô hình Nến Nhật</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0f19',
+                        cardBg: '#111827',
+                        cardBorder: '#1f293d',
+                        bullish: '#10b981',
+                        bearish: '#f43f5e',
+                        cyanAccent: '#06b6d4',
+                        blueAccent: '#3b82f6'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+        }
+        .font-mono-code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        .glow-cyan {
+            box-shadow: 0 0 35px -5px rgba(6, 182, 212, 0.25);
+        }
+        .glow-bull {
+            box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.2);
+        }
+        .glow-bear {
+            box-shadow: 0 0 25px -5px rgba(244, 63, 94, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 antialiased selection:bg-cyanAccent selection:text-black">
+
+    <!-- Header / Navbar -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-[#0b0f19]/90 backdrop-blur-md border-b border-cardBorder">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#hero" class="flex items-center space-x-3 group">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-emerald-400 p-[2px] shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform duration-300">
+                    <div class="w-full h-full bg-[#0b0f19] rounded-[10px] flex items-center justify-center font-black text-cyanAccent tracking-wider text-base">
+                        H4
+                    </div>
+                </div>
+                <div>
+                    <span class="text-lg font-black tracking-tight text-white block leading-tight">Giao dịch theo nến H4</span>
+                    <span class="text-[11px] font-semibold text-cyan-400/80 tracking-widest uppercase">Price Action Academy</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden lg:flex items-center space-x-1">
+                <a href="#tong-quan" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors">Tổng quan H4</a>
+                <a href="#thu-vien-50" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors flex items-center space-x-1.5">
+                    <span>50 Mô hình nến</span>
+                    <span class="px-1.5 py-0.5 text-[10px] bg-emerald-500/20 text-emerald-400 rounded-full font-bold">50</span>
+                </a>
+                <a href="#chien-luoc" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors">Chiến lược H4</a>
+                <a href="#cong-cu" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors">Tính Lot & R:R</a>
+                <a href="#quiz" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors">Trắc nghiệm H4</a>
+            </nav>
+
+            <!-- Quick Action Buttons -->
+            <div class="flex items-center space-x-3">
+                <a href="#thu-vien-50" class="hidden sm:inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl font-semibold text-xs tracking-wider uppercase text-black bg-gradient-to-r from-cyanAccent to-emerald-400 hover:brightness-110 shadow-lg shadow-cyanAccent/20 transition-all">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Khám phá 50 Nến</span>
+                </a>
+                <button id="mobile-toggle-btn" class="lg:hidden p-2.5 rounded-xl bg-cardBg border border-cardBorder text-slate-300 hover:text-white focus:outline-none">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-nav" class="hidden lg:hidden bg-cardBg/95 backdrop-blur border-b border-cardBorder px-5 py-4 space-y-2">
+            <a href="#tong-quan" class="mobile-nav-link block px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800">Tổng quan H4</a>
+            <a href="#thu-vien-50" class="mobile-nav-link block px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800">50 Mô hình nến Nhật</a>
+            <a href="#chien-luoc" class="mobile-nav-link block px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800">Chiến lược Price Action H4</a>
+            <a href="#cong-cu" class="mobile-nav-link block px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800">Công cụ tính Lot</a>
+            <a href="#quiz" class="mobile-nav-link block px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800">Trắc nghiệm 5 câu</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="relative pt-32 pb-20 md:pt-44 md:pb-28 overflow-hidden">
+        <!-- Ambient Backlights -->
+        <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-cyan-600/15 blur-[140px] rounded-full pointer-events-none"></div>
+        <div class="absolute top-1/3 right-10 w-[400px] h-[300px] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+        <div class="absolute top-1/2 left-10 w-[400px] h-[300px] bg-rose-600/10 blur-[130px] rounded-full pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-cardBorder text-cyan-400 text-xs font-semibold mb-6">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Khung thời gian vàng của các quỹ đầu tư & Professional Trader</span>
+            </div>
+
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight max-w-5xl mx-auto">
+                Làm chủ nghệ thuật <br class="hidden sm:block"/>
+                <span class="bg-gradient-to-r from-cyan-400 via-emerald-400 to-blue-500 bg-clip-text text-transparent">Giao dịch theo nến H4</span>
+            </h1>
+
+            <p class="mt-6 text-base sm:text-xl text-slate-400 max-w-3xl mx-auto font-normal leading-relaxed">
+                Loại bỏ 80% tín hiệu nhiễu từ các khung nhỏ (M5, M15). Khung 4 giờ mở ra bức tranh cung cầu chân thực nhất, giúp bạn tối ưu hóa thời gian, nắm trọn sóng lớn và giữ tỷ lệ Risk:Reward (R:R) từ 1:3 trở lên.
+            </p>
+
+            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#thu-vien-50" class="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-black bg-gradient-to-r from-cyanAccent to-emerald-400 hover:brightness-110 shadow-xl shadow-cyanAccent/20 transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-shapes"></i>
+                    <span>Khám phá trọn bộ 50 mô hình nến</span>
+                </a>
+                <a href="#cong-cu" class="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-slate-200 bg-cardBg border border-cardBorder hover:border-cyan-500/50 hover:bg-slate-800 transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-calculator text-cyanAccent"></i>
+                    <span>Máy tính quản lý rủi ro</span>
+                </a>
+            </div>
+
+            <!-- H4 Time Sessions Live Tracker Widget -->
+            <div class="mt-16 max-w-5xl mx-auto bg-cardBg/80 backdrop-blur-md rounded-2xl border border-cardBorder p-6 shadow-2xl">
+                <div class="flex flex-col sm:flex-row items-center justify-between pb-4 border-b border-cardBorder gap-3">
+                    <div class="flex items-center space-x-2.5">
+                        <i class="fa-regular fa-clock text-cyanAccent text-lg"></i>
+                        <span class="font-bold text-white text-sm">6 Chu kỳ đóng nến H4 chuẩn Quốc tế (Giờ Việt Nam UTC+7):</span>
+                    </div>
+                    <span class="font-mono-code text-xs text-slate-400 bg-slate-900 px-3 py-1 rounded-lg border border-cardBorder">
+                        Mỗi chu kỳ: 240 Phút
+                    </span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-4">
+                    <div class="p-3 bg-slate-900/90 rounded-xl border border-cardBorder text-center">
+                        <span class="text-xs text-slate-400 block font-medium">Nến 1</span>
+                        <span class="text-base font-bold font-mono-code text-white">01:00</span>
+                        <span class="text-[10px] text-slate-500 block">Đóng phiên Mỹ</span>
+                    </div>
+                    <div class="p-3 bg-slate-900/90 rounded-xl border border-cardBorder text-center">
+                        <span class="text-xs text-slate-400 block font-medium">Nến 2</span>
+                        <span class="text-base font-bold font-mono-code text-white">05:00</span>
+                        <span class="text-[10px] text-slate-500 block">Chuyển phiên Úc</span>
+                    </div>
+                    <div class="p-3 bg-slate-900/90 rounded-xl border border-cardBorder text-center">
+                        <span class="text-xs text-slate-400 block font-medium">Nến 3</span>
+                        <span class="text-base font-bold font-mono-code text-white">09:00</span>
+                        <span class="text-[10px] text-slate-500 block">Đầu phiên Á (Tokyo)</span>
+                    </div>
+                    <div class="p-3 bg-slate-900/90 rounded-xl border border-cardBorder text-center">
+                        <span class="text-xs text-slate-400 block font-medium">Nến 4</span>
+                        <span class="text-base font-bold font-mono-code text-white">13:00</span>
+                        <span class="text-[10px] text-slate-500 block">Kết phiên Á</span>
+                    </div>
+                    <div class="p-3 bg-slate-900/90 rounded-xl border border-cardBorder text-center border-cyan-500/40 bg-cyan-950/20">
+                        <span class="text-xs text-cyan-300 block font-medium">Nến 5 ★</span>
+                        <span class="text-base font-bold font-mono-code text-cyanAccent">17:00</span>
+                        <span class="text-[10px] text-cyan-400 block">Giao phiên Âu (London)</span>
+                    </div>
+                    <div class="p-3 bg-slate-900/90 rounded-xl border border-cardBorder text-center border-emerald-500/40 bg-emerald-950/20">
+                        <span class="text-xs text-emerald-300 block font-medium">Nến 6 ★</span>
+                        <span class="text-base font-bold font-mono-code text-emerald-400">21:00</span>
+                        <span class="text-[10px] text-emerald-400 block">Cao điểm phiên Mỹ (NY)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Phần: Tổng quan & Ưu điểm cốt lõi H4 -->
+    <section id="tong-quan" class="py-20 border-t border-cardBorder bg-[#0d1424]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-cyanAccent text-xs font-bold uppercase tracking-widest">Góc nhìn chuyên gia</span>
+                <h2 class="text-3xl sm:text-4xl font-black text-white mt-2">Tại sao nến H4 là chân ái của trường phái Price Action?</h2>
+                <p class="text-slate-400 mt-3 text-sm sm:text-base">Sự cân bằng lý tưởng giữa tính chính xác của khung Ngày (D1) và tốc độ linh hoạt của khung giờ trong ngày.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="p-8 rounded-2xl bg-cardBg border border-cardBorder hover:border-cyan-500/50 transition-all duration-300 group">
+                    <div class="w-14 h-14 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyanAccent text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-filter-circle-dollar"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Lọc bỏ tối đa Fakeout & Nhiễu</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Các đợt quét thanh khoản (Liquidity Hunts) của tạo lập thị trường thường chỉ diễn ra chớp nhoáng trên M5, M15. Nến H4 đóng cửa phản ánh rõ phe nào thật sự kiểm soát cục diện sau 4 tiếng giao chiến.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="p-8 rounded-2xl bg-cardBg border border-cardBorder hover:border-emerald-500/50 transition-all duration-300 group">
+                    <div class="w-14 h-14 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-mug-hot"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Giải phóng thời gian & Tâm lý</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Bạn chỉ cần mở biểu đồ vào đúng các mốc đóng nến (09h, 13h, 17h, 21h). Không còn cảm giác bồn chồn dán mắt vào bảng điện, hạn chế triệt để lỗi FOMO và trả thù thị trường.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="p-8 rounded-2xl bg-cardBg border border-cardBorder hover:border-blue-500/50 transition-all duration-300 group">
+                    <div class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-arrows-to-circle"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Điểm cắt lỗ chặt, Biên độ lớn</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Stop Loss được neo kiên cố dưới đáy/đỉnh râu nến H4. Khi xu hướng bùng nổ, mục tiêu Take Profit thường đạt từ 100 đến 350 pip, tạo ra tỷ lệ R:R vượt trội (1:3 đến 1:6).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRỌNG TÂM: THƯ VIỆN ĐỦ 50 MÔ HÌNH NẾN NHẬT -->
+    <section id="thu-vien-50" class="py-24 border-t border-cardBorder relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-4xl mx-auto mb-12">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-800 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-3">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Bộ bách khoa toàn thư Price Action</span>
+                </div>
+                <h2 class="text-3xl sm:text-5xl font-black text-white">Thư viện 50 Mô hình Nến Nhật</h2>
+                <p class="text-slate-400 mt-4 text-sm sm:text-base">
+                    Tra cứu đầy đủ 50 mô hình nến từ cơ bản đến nâng cao. Mỗi mô hình đều có hình minh họa nến chân thực, phân tích tâm lý lực mua/bán và điều kiện kích hoạt lệnh trên nến H4.
+                </p>
+            </div>
+
+            <!-- Controls: Filter Tabs & Search Bar -->
+            <div class="bg-cardBg border border-cardBorder p-4 sm:p-6 rounded-3xl mb-10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <!-- Category Tabs -->
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto" id="category-tabs">
+                    <button onclick="setCandleFilter('all')" class="cat-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-cyanAccent text-black shadow-md shadow-cyanAccent/20" data-cat="all">
+                        Tất cả (<span id="count-all">50</span>)
+                    </button>
+                    <button onclick="setCandleFilter('bullish')" class="cat-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-slate-900 text-slate-300 hover:text-emerald-400 border border-cardBorder" data-cat="bullish">
+                        <i class="fa-solid fa-arrow-trend-up text-emerald-400 mr-1.5"></i> Đảo chiều Tăng (<span id="count-bull">20</span>)
+                    </button>
+                    <button onclick="setCandleFilter('bearish')" class="cat-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-slate-900 text-slate-300 hover:text-rose-400 border border-cardBorder" data-cat="bearish">
+                        <i class="fa-solid fa-arrow-trend-down text-rose-400 mr-1.5"></i> Đảo chiều Giảm (<span id="count-bear">20</span>)
+                    </button>
+                    <button onclick="setCandleFilter('continuation')" class="cat-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-slate-900 text-slate-300 hover:text-cyan-400 border border-cardBorder" data-cat="continuation">
+                        <i class="fa-solid fa-repeat text-cyan-400 mr-1.5"></i> Tiếp diễn & Trung lập (<span id="count-cont">10</span>)
+                    </button>
+                </div>
+
+                <!-- Live Search Box -->
+                <div class="relative w-full md:w-80">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="pattern-search" oninput="handleSearch()" placeholder="Tìm theo tên Việt / Anh..." class="w-full bg-slate-900 border border-cardBorder rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyanAccent transition-colors">
+                </div>
+            </div>
+
+            <!-- Pattern Cards Grid (50 Items) -->
+            <div id="candle-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Injected via JavaScript below -->
+            </div>
+
+            <!-- Zero State Search Result -->
+            <div id="zero-result" class="hidden text-center py-20 bg-cardBg rounded-3xl border border-cardBorder">
+                <i class="fa-solid fa-ghost text-5xl text-slate-600 mb-4"></i>
+                <h3 class="text-xl font-bold text-white">Không tìm thấy mô hình nến phù hợp</h3>
+                <p class="text-slate-400 text-sm mt-2">Hãy thử tìm với từ khóa khác như "Engulfing", "Doji", "Hammer", "Star"...</p>
+                <button onclick="resetSearch()" class="mt-4 px-5 py-2 rounded-xl bg-slate-800 text-cyan-400 text-xs font-semibold hover:bg-slate-700">Xóa tìm kiếm</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Chi Tiết Mô Hình Nến -->
+    <div id="pattern-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
+        <div class="bg-cardBg border border-cardBorder rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative p-6 sm:p-8">
+            <button onclick="closePatternModal()" class="absolute top-6 right-6 w-9 h-9 rounded-xl bg-slate-900 border border-cardBorder flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-600 transition-all">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 mb-4">
+                <span id="modal-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Đảo chiều tăng</span>
+                <span class="text-xs text-slate-400 font-mono-code" id="modal-type-code">H4 Setup</span>
+            </div>
+
+            <h3 class="text-2xl sm:text-3xl font-black text-white" id="modal-title-vi">Mô hình nến</h3>
+            <div class="text-sm text-cyanAccent font-medium mb-6" id="modal-title-en">English Name</div>
+
+            <!-- Graphic Preview Container in Modal -->
+            <div class="bg-slate-950 rounded-2xl p-6 border border-cardBorder flex items-center justify-center mb-6 min-h-[140px]" id="modal-diagram-container">
+                <!-- Rendered candle illustration -->
+            </div>
+
+            <div class="space-y-5 text-sm">
+                <div>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-brain text-cyan-400"></i>
+                        <span>Tâm lý thị trường & Cung cầu:</span>
+                    </h4>
+                    <p class="text-slate-300 leading-relaxed bg-slate-900/60 p-4 rounded-xl border border-cardBorder" id="modal-psychology"></p>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                        <span>Điều kiện xác nhận nến H4:</span>
+                    </h4>
+                    <p class="text-slate-300 leading-relaxed bg-slate-900/60 p-4 rounded-xl border border-cardBorder" id="modal-condition"></p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                    <div class="p-3.5 bg-slate-900 rounded-xl border border-cardBorder">
+                        <span class="text-[11px] font-bold text-emerald-400 uppercase block mb-1">Điểm vào lệnh (Entry)</span>
+                        <span class="text-xs text-slate-200" id="modal-entry">Đóng nến H4 xác nhận</span>
+                    </div>
+                    <div class="p-3.5 bg-slate-900 rounded-xl border border-cardBorder">
+                        <span class="text-[11px] font-bold text-rose-400 uppercase block mb-1">Cắt lỗ (Stop Loss)</span>
+                        <span class="text-xs text-slate-200" id="modal-sl">Cách râu nến 5-10 pip</span>
+                    </div>
+                    <div class="p-3.5 bg-slate-900 rounded-xl border border-cardBorder">
+                        <span class="text-[11px] font-bold text-cyan-400 uppercase block mb-1">Chốt lời (Take Profit)</span>
+                        <span class="text-xs text-slate-200" id="modal-tp">Tỷ lệ tối thiểu R:R 1:2.5</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-end">
+                <button onclick="closePatternModal()" class="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs tracking-wider uppercase transition-colors">
+                    Đóng cửa sổ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phần: Chiến lược Price Action H4 -->
+    <section id="chien-luoc" class="py-20 border-t border-cardBorder bg-[#0a0f1d]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-cyanAccent text-xs font-bold uppercase tracking-widest">Hệ thống bài bản</span>
+                <h2 class="text-3xl sm:text-4xl font-black text-white mt-2">Hệ thống giao dịch Price Action chuẩn H4</h2>
+                <p class="text-slate-400 mt-3 text-sm sm:text-base">Mô hình nến chỉ phát huy 100% công lực khi được đặt đúng bối cảnh dòng tiền và cấu trúc xu hướng.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Chiến lược 1 -->
+                <div class="bg-cardBg border border-cardBorder rounded-3xl p-8 hover:border-cyan-500/40 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyanAccent flex items-center justify-center font-bold text-xl mb-6">01</div>
+                        <h3 class="text-xl font-bold text-white mb-3">Nến H4 tại Vùng Kháng cự / Hỗ trợ then chốt</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            Đừng bao giờ vào lệnh giữa lưng chừng sóng. Hãy kiên nhẫn chờ giá tiếp cận vùng đỉnh/đáy tuần hoặc tháng (Key Levels).
+                        </p>
+                        <ul class="space-y-3 text-xs text-slate-300 mb-6">
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
+                                <span>Xác định vùng cung cầu (Supply/Demand) khung D1/H4.</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
+                                <span>Chờ nến H4 chạm cản và để lại râu từ chối giá (Pin Bar, Engulfing).</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
+                                <span>Vào lệnh ngay khi cây nến H4 xác nhận đóng cửa.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="pt-4 border-t border-cardBorder flex justify-between text-xs text-slate-400">
+                        <span>Xác suất thắng: <strong class="text-emerald-400 font-semibold">~ 72%</strong></span>
+                        <span>Mục tiêu R:R: <strong class="text-cyanAccent font-semibold">1:3</strong></span>
+                    </div>
+                </div>
+
+                <!-- Chiến lược 2 -->
+                <div class="bg-cardBg border border-cardBorder rounded-3xl p-8 hover:border-emerald-500/40 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xl mb-6">02</div>
+                        <h3 class="text-xl font-bold text-white mb-3">Sóng hồi Pullback nương theo EMA 21 & EMA 50</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            Giao dịch theo xu hướng chính (Trend Following). Cặp EMA 21 và EMA 50 trên H4 tạo nên "vùng đệm động" cực kỳ uy tín cho các cú hồi quy.
+                        </p>
+                        <ul class="space-y-3 text-xs text-slate-300 mb-6">
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
+                                <span>Giá nằm hoàn toàn trên EMA 21/50 đối với xu hướng tăng.</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
+                                <span>Chờ giá điều chỉnh nhẹ về chạm dải ranh giới EMA.</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
+                                <span>Xuất hiện Piercing Line, Morning Star hoặc Bullish Marubozu đẩy tiếp.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="pt-4 border-t border-cardBorder flex justify-between text-xs text-slate-400">
+                        <span>Xác suất thắng: <strong class="text-emerald-400 font-semibold">~ 68%</strong></span>
+                        <span>Mục tiêu R:R: <strong class="text-cyanAccent font-semibold">1:4</strong></span>
+                    </div>
+                </div>
+
+                <!-- Chiến lược 3 -->
+                <div class="bg-cardBg border border-cardBorder rounded-3xl p-8 hover:border-blue-500/40 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xl mb-6">03</div>
+                        <h3 class="text-xl font-bold text-white mb-3">Mô hình Inside Bar phá vỡ đỉnh đáy (Breakout)</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            Mô hình Inside Bar nén lực thể hiện sự tích lũy biên độ hẹp trước thềm những tin tức kinh tế hoặc thời điểm giao phiên Âu - Mỹ.
+                        </p>
+                        <ul class="space-y-3 text-xs text-slate-300 mb-6">
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
+                                <span>Xác định cây nến mẹ (Mother Bar) có thân lớn trên H4.</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
+                                <span>Có từ 1 đến 3 cây nến con nằm gọn trong biên độ nến mẹ.</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
+                                <span>Đặt Buy Stop trên đỉnh hoặc Sell Stop dưới đáy nến mẹ.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="pt-4 border-t border-cardBorder flex justify-between text-xs text-slate-400">
+                        <span>Xác suất thắng: <strong class="text-emerald-400 font-semibold">~ 65%</strong></span>
+                        <span>Mục tiêu R:R: <strong class="text-cyanAccent font-semibold">1:5</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Phần: Công cụ Tính Khối Lượng Lot & Quản Lý R:R -->
+    <section id="cong-cu" class="py-20 border-t border-cardBorder">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-cyanAccent text-xs font-bold uppercase tracking-widest">Quản trị vốn sống còn</span>
+                <h2 class="text-3xl sm:text-4xl font-black text-white mt-2">Máy tính Khối lượng Lệnh & Tỷ lệ R:R</h2>
+                <p class="text-slate-400 mt-3 text-sm sm:text-base">Không bao giờ đặt cược bừa bãi. Tính toán chính xác số Lot cần đi theo đúng số USD rủi ro bạn chấp nhận mất.</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto bg-cardBg border border-cardBorder rounded-3xl p-6 sm:p-10 shadow-2xl">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Input Section -->
+                    <div class="space-y-4">
+                        <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
+                            <i class="fa-solid fa-sliders text-cyanAccent"></i>
+                            <span>Thông số lệnh giao dịch:</span>
+                        </h4>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Số dư tài khoản ($ USD)</label>
+                            <input type="number" id="calc-equity" value="5000" class="w-full bg-slate-900 border border-cardBorder rounded-xl px-4 py-2.5 font-mono-code text-white focus:outline-none focus:border-cyanAccent">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Rủi ro chấp nhận mỗi lệnh (%)</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="number" id="calc-risk" value="1.5" step="0.5" class="w-full bg-slate-900 border border-cardBorder rounded-xl px-4 py-2.5 font-mono-code text-white focus:outline-none focus:border-cyanAccent">
+                                <span class="text-xs text-slate-400 font-mono-code">%</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Khoảng cách Dừng lỗ - Stop Loss (Pips)</label>
+                            <input type="number" id="calc-sl" value="45" class="w-full bg-slate-900 border border-cardBorder rounded-xl px-4 py-2.5 font-mono-code text-white focus:outline-none focus:border-cyanAccent">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Khoảng cách Chốt lời - Take Profit (Pips)</label>
+                            <input type="number" id="calc-tp" value="135" class="w-full bg-slate-900 border border-cardBorder rounded-xl px-4 py-2.5 font-mono-code text-white focus:outline-none focus:border-cyanAccent">
+                        </div>
+
+                        <button onclick="calculateRisk()" class="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-cyanAccent to-emerald-400 hover:brightness-110 text-black font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg shadow-cyanAccent/20">
+                            Tính toán vị thế ngay
+                        </button>
+                    </div>
+
+                    <!-- Output Panel -->
+                    <div class="bg-slate-950/80 rounded-2xl border border-cardBorder p-6 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-4">Kết quả quản trị lệnh:</span>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-cardBorder">
+                                    <span class="text-xs text-slate-400">Số tiền rủi ro tối đa (Risk $):</span>
+                                    <span class="font-mono-code font-bold text-rose-400 text-base" id="out-risk-usd">$75.00</span>
+                                </div>
+                                <div class="flex items-center justify-between pb-3 border-b border-cardBorder">
+                                    <span class="text-xs text-slate-400">Khối lượng vào lệnh chuẩn (Lot):</span>
+                                    <span class="font-mono-code font-extrabold text-cyanAccent text-2xl" id="out-lot">0.17 Lot</span>
+                                </div>
+                                <div class="flex items-center justify-between pb-3 border-b border-cardBorder">
+                                    <span class="text-xs text-slate-400">Lợi nhuận mục tiêu kỳ vọng:</span>
+                                    <span class="font-mono-code font-bold text-emerald-400 text-base" id="out-reward-usd">+$225.00</span>
+                                </div>
+                                <div class="flex items-center justify-between pb-2">
+                                    <span class="text-xs text-slate-400">Tỷ lệ Risk : Reward:</span>
+                                    <span class="font-mono-code font-bold text-white px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-xs" id="out-rr">1 : 3.0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-slate-900 border border-cardBorder text-xs text-slate-400 leading-relaxed mt-4">
+                            <i class="fa-solid fa-lightbulb text-amber-400 mr-1.5"></i>
+                            <strong>Lời khuyên H4:</strong> Giữ mức rủi ro mỗi lệnh dưới <strong>2%</strong> tổng vốn để bảo vệ bạn khỏi các chuỗi thua lỗ liên tiếp.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Phần: Mini Quiz Trắc nghiệm Kiến thức H4 -->
+    <section id="quiz" class="py-20 border-t border-cardBorder bg-[#0d1424]">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-14">
+                <span class="text-cyanAccent text-xs font-bold uppercase tracking-widest">Kiểm tra tư duy</span>
+                <h2 class="text-3xl sm:text-4xl font-black text-white mt-2">Mini Quiz: Bạn hiểu nến H4 đến đâu?</h2>
+                <p class="text-slate-400 mt-3 text-sm">5 câu trắc nghiệm thực chiến giúp bạn củng cố kiến thức trước khi mở lệnh thật.</p>
+            </div>
+
+            <div class="bg-cardBg border border-cardBorder rounded-3xl p-6 sm:p-10 shadow-2xl relative">
+                <!-- Quiz Progress Bar -->
+                <div class="w-full bg-slate-900 h-2 rounded-full mb-8 overflow-hidden">
+                    <div id="quiz-progress" class="bg-gradient-to-r from-cyanAccent to-emerald-400 h-full w-1/5 transition-all duration-300"></div>
+                </div>
+
+                <!-- Questions Container -->
+                <div id="quiz-card">
+                    <!-- Rendered dynamic question -->
+                </div>
+
+                <!-- Result Box (Hidden by default) -->
+                <div id="quiz-result" class="hidden text-center py-8">
+                    <div class="w-20 h-20 rounded-full bg-cyan-500/10 text-cyanAccent flex items-center justify-center text-3xl mx-auto mb-4 border border-cyan-500/30" id="quiz-result-icon">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <h3 class="text-2xl font-black text-white mb-2" id="quiz-result-title">Hoàn thành bài kiểm tra!</h3>
+                    <p class="text-slate-400 text-sm mb-6" id="quiz-result-desc">Bạn đã trả lời chính xác 5/5 câu hỏi.</p>
+                    <button onclick="restartQuiz()" class="px-6 py-3 rounded-xl bg-cyanAccent text-black font-bold text-xs uppercase tracking-wider hover:brightness-110 transition-all">
+                        Làm lại bài kiểm tra
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-cardBorder py-14 text-slate-400 text-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div class="md:col-span-2 space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center text-black font-black text-sm">
+                            H4
+                        </div>
+                        <span class="text-lg font-black text-white">Giao dịch theo nến H4</span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-400 max-w-md leading-relaxed">
+                        Nền tảng tri thức Price Action chuẩn mực cho nhà đầu tư tài chính. Hệ thống hóa 50 mô hình nến Nhật kết hợp tư duy phân tích đa khung thời gian và quản lý vốn kỷ luật.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-xs uppercase tracking-wider mb-4">Liên kết danh mục</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="#tong-quan" class="hover:text-cyanAccent transition-colors">Tổng quan khung H4</a></li>
+                        <li><a href="#thu-vien-50" class="hover:text-cyanAccent transition-colors">Thư viện 50 mô hình nến</a></li>
+                        <li><a href="#chien-luoc" class="hover:text-cyanAccent transition-colors">Chiến lược Price Action</a></li>
+                        <li><a href="#cong-cu" class="hover:text-cyanAccent transition-colors">Máy tính khối lượng Lot</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-xs uppercase tracking-wider mb-4">Cộng đồng & Bản tin</h4>
+                    <p class="text-xs text-slate-500 mb-3">Nhận các thiết lập nến H4 hàng ngày hoàn toàn miễn phí:</p>
+                    <div class="flex space-x-2">
+                        <input type="email" placeholder="Email của bạn..." class="bg-slate-900 border border-cardBorder rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyanAccent w-full">
+                        <button onclick="handleSubscribe()" class="px-3 py-2 rounded-xl bg-cyanAccent text-black text-xs font-bold hover:brightness-110">Gửi</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-cardBorder text-xs text-slate-500 space-y-3 leading-relaxed">
+                <p><strong>Cảnh báo rủi ro quan trọng (Risk Disclaimer):</strong> Giao dịch ngoại hối (Forex), Hợp đồng chênh lệch (CFD), Vàng và Tiền mã hóa mang rủi ro thua lỗ tài chính rất cao và có thể không phù hợp với mọi đối tượng. Toàn bộ nội dung và 50 mô hình nến trên trang web chỉ phục vụ mục đích giáo dục, không phải là lời mời hay tư vấn ủy thác đầu tư.</p>
+                <div class="flex flex-col sm:flex-row items-center justify-between pt-4 text-slate-600">
+                    <p>&copy; 2026 Giao dịch theo nến H4. All rights reserved.</p>
+                    <div class="flex space-x-4 mt-2 sm:mt-0">
+                        <a href="#" class="hover:text-slate-400">Điều khoản dịch vụ</a>
+                        <a href="#" class="hover:text-slate-400">Chính sách bảo mật</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- DỮ LIỆU ĐẦY ĐỦ 50 MÔ HÌNH NẾN NHẬT & LOGIC JAVASCRIPT -->
+    <script>
+        // Danh sách 50 mô hình nến chi tiết
+        const CANDLE_DATA = [
+            // --- 20 MÔ HÌNH ĐẢO CHIỀU TĂNG (BULLISH REVERSAL) ---
+            {
+                id: 1,
+                nameVi: "Nến Búa",
+                nameEn: "Hammer",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [{ type: "bull", body: 24, upperWick: 4, lowerWick: 52 }],
+                psychology: "Phe bán đẩy giá xuống rất sâu trong phiên H4 nhưng bị phe mua hấp thụ toàn bộ và đẩy ngược giá đóng cửa sát mức cao nhất.",
+                condition: "Xuất hiện ở đáy một xu hướng giảm, gần hỗ trợ quan trọng. Bóng dưới dài ít nhất gấp 2-3 lần thân nến.",
+                entry: "Đóng nến H4 vượt đỉnh cây búa",
+                sl: "Dưới bóng nến dưới (râu búa) 5-10 pip",
+                tp: "Đỉnh cũ gần nhất hoặc R:R 1:2.5"
+            },
+            {
+                id: 2,
+                nameVi: "Nến Búa Ngược",
+                nameEn: "Inverted Hammer",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [{ type: "bull", body: 24, upperWick: 52, lowerWick: 4 }],
+                psychology: "Phe mua đã thử thách đẩy giá lên cao. Dù giá bị đẩy lui nhẹ cuối phiên H4, phe mua đã phát tín hiệu chuẩn bị chiếm lại quyền kiểm soát.",
+                condition: "Cần nến xanh tiếp theo trên H4 xác nhận lực mua tiếp diễn.",
+                entry: "Khi nến H4 tiếp theo phá đỉnh nến búa ngược",
+                sl: "Dưới đáy thấp nhất cây nến",
+                tp: "R:R 1:3 hoặc vùng cản kế tiếp"
+            },
+            {
+                id: 3,
+                nameVi: "Nhấn Chìm Tăng",
+                nameEn: "Bullish Engulfing",
+                category: "bullish",
+                badge: "Đảo chiều tăng mạnh",
+                candles: [
+                    { type: "bear", body: 35, upperWick: 10, lowerWick: 10 },
+                    { type: "bull", body: 70, upperWick: 8, lowerWick: 8 }
+                ],
+                psychology: "Thân nến xanh H4 khổng lồ nuốt chửng hoàn toàn toàn bộ thân nến đỏ trước đó, chứng minh phe mua áp đảo tuyệt đối.",
+                condition: "Xuất hiện tại vùng hỗ trợ cứng hoặc sau một chuỗi giảm sâu.",
+                entry: "Ngay khi nến H4 nuốt chửng đóng cửa",
+                sl: "Dưới đáy nến xanh bao phủ",
+                tp: "Kháng cự tiếp theo trên khung H4"
+            },
+            {
+                id: 4,
+                nameVi: "Đường Xuyên Phá",
+                nameEn: "Piercing Line",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [
+                    { type: "bear", body: 60, upperWick: 10, lowerWick: 10 },
+                    { type: "bull", body: 55, upperWick: 10, lowerWick: 10 }
+                ],
+                psychology: "Nến 2 mở cửa gap giảm nhưng lực mua tăng vọt đẩy giá đóng cửa vượt quá 50% thân nến đỏ trước đó.",
+                condition: "Giá đóng nến H4 thứ 2 bắt buộc phải vượt quá 50% thân cây nến giảm phía trước.",
+                entry: "Đóng nến cây nến thứ 2",
+                sl: "Dưới đáy thấp nhất của nến 2",
+                tp: "R:R 1:2.5"
+            },
+            {
+                id: 5,
+                nameVi: "Sao Mai",
+                nameEn: "Morning Star",
+                category: "bullish",
+                badge: "Đảo chiều tăng uy tín",
+                candles: [
+                    { type: "bear", body: 60, upperWick: 10, lowerWick: 10 },
+                    { type: "doji", body: 10, upperWick: 15, lowerWick: 15 },
+                    { type: "bull", body: 55, upperWick: 10, lowerWick: 10 }
+                ],
+                psychology: "Bộ 3 nến H4 (tương ứng 12 giờ): Giảm mạnh -> Lưỡng lự kiệt sức -> Bật tăng áp đảo trở lại.",
+                condition: "Nến 3 đóng cửa ăn sâu vào nến 1. Một trong những setup có winrate cao nhất trên H4.",
+                entry: "Ngay khi nến thứ 3 kết thúc trên H4",
+                sl: "Dưới râu của nến ngôi sao ở giữa",
+                tp: "Vùng Swing High gần nhất"
+            },
+            {
+                id: 6,
+                nameVi: "Ba Chàng Lính Trắng",
+                nameEn: "Three White Soldiers",
+                category: "bullish",
+                badge: "Đảo chiều tăng mạnh",
+                candles: [
+                    { type: "bull", body: 45, upperWick: 8, lowerWick: 8 },
+                    { type: "bull", body: 50, upperWick: 8, lowerWick: 8 },
+                    { type: "bull", body: 55, upperWick: 8, lowerWick: 8 }
+                ],
+                psychology: "Ba nến xanh tăng liên tiếp với thân lớn và râu ngắn chứng minh dòng tiền lớn (Smart Money) đang ồ ạt tích lũy.",
+                condition: "Mỗi nến mở cửa bên trong thân nến trước và đóng cửa tạo đỉnh cao mới.",
+                entry: "Sau khi nến thứ 3 đóng cửa hoặc chờ hồi nhẹ test nến 2",
+                sl: "Dưới đáy nến số 1",
+                tp: "Tỷ lệ R:R 1:3"
+            },
+            {
+                id: 7,
+                nameVi: "Đáy Nhíp",
+                nameEn: "Tweezer Bottom",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [
+                    { type: "bear", body: 40, upperWick: 8, lowerWick: 35 },
+                    { type: "bull", body: 40, upperWick: 8, lowerWick: 35 }
+                ],
+                psychology: "Hai phiên nến H4 liên tiếp cố gắng đục thủng một mốc giá nhưng đều bị từ chối chính xác tại cùng một điểm đáy.",
+                condition: "Hai cây nến có đáy (Low) bằng nhau hoặc xê xích không đáng kể tại hỗ trợ.",
+                entry: "Mở lệnh Buy khi nến xanh thứ 2 đóng cửa",
+                sl: "Dưới 2 đáy nhíp 5 pip",
+                tp: "Đỉnh sóng gần nhất"
+            },
+            {
+                id: 8,
+                nameVi: "Mẹ Bồng Con Tăng",
+                nameEn: "Bullish Harami",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [
+                    { type: "bear", body: 70, upperWick: 10, lowerWick: 10 },
+                    { type: "bull", body: 25, upperWick: 6, lowerWick: 6 }
+                ],
+                psychology: "Lực bán mạnh của nến đỏ bị ngắt quãng hoàn toàn bởi một nến xanh nhỏ nằm gọn bên trong thân nến trước.",
+                condition: "Thân nến con phải lọt hoàn toàn trong phạm vi thân nến mẹ.",
+                entry: "Chờ nến xác nhận thứ 3 vượt đỉnh nến con",
+                sl: "Dưới đáy nến mẹ",
+                tp: "R:R 1:2.5"
+            },
+            {
+                id: 9,
+                nameVi: "Doji Chuồn Chuồn",
+                nameEn: "Dragonfly Doji",
+                category: "bullish",
+                badge: "Đảo chiều tăng mạnh",
+                candles: [{ type: "doji", body: 4, upperWick: 2, lowerWick: 65 }],
+                psychology: "Giá mở cửa và đóng cửa gần như bằng nhau ở mức cao nhất, trong khi râu dưới siêu dài cho thấy lực bắt đáy khủng khiếp.",
+                condition: "Cực kỳ hiệu quả nếu xuất hiện tại các vùng hỗ trợ khung D1 hoặc H4.",
+                entry: "Đóng nến H4 Doji chuồn chuồn",
+                sl: "Dưới đuôi nến chuồn chuồn",
+                tp: "Vùng cản cứng bên trên"
+            },
+            {
+                id: 10,
+                nameVi: "Marubozu Tăng",
+                nameEn: "Bullish Marubozu",
+                category: "bullish",
+                badge: "Lực tăng tuyệt đối",
+                candles: [{ type: "bull", body: 80, upperWick: 2, lowerWick: 2 }],
+                psychology: "Nến xanh đặc gần như không có râu. Phe mua làm chủ hoàn toàn từ giây đầu tiên đến giây cuối cùng của phiên 4 tiếng.",
+                condition: "Thường báo hiệu bứt phá (breakout) khỏi vùng tích lũy H4.",
+                entry: "Theo đà tăng sau khi nến đóng",
+                sl: "Dưới điểm mở cửa cây Marubozu",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 11,
+                nameVi: "Sao Doji Ban Mai",
+                nameEn: "Morning Doji Star",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [
+                    { type: "bear", body: 60, upperWick: 10, lowerWick: 10 },
+                    { type: "doji", body: 2, upperWick: 15, lowerWick: 15 },
+                    { type: "bull", body: 55, upperWick: 10, lowerWick: 10 }
+                ],
+                psychology: "Biến thể của Morning Star nhưng nến giữa là một cây Doji hoàn hảo, thể hiện sự chững lại triệt để của đà giảm.",
+                condition: "Nến Doji nằm cách biệt ở giữa, nến 3 bứt phá mạnh.",
+                entry: "Đóng nến thứ 3",
+                sl: "Dưới râu Doji",
+                tp: "Kháng cự H4 kế tiếp"
+            },
+            {
+                id: 12,
+                nameVi: "Ba Nến Bên Trong Tăng",
+                nameEn: "Three Inside Up",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [
+                    { type: "bear", body: 65, upperWick: 8, lowerWick: 8 },
+                    { type: "bull", body: 28, upperWick: 6, lowerWick: 6 },
+                    { type: "bull", body: 50, upperWick: 6, lowerWick: 6 }
+                ],
+                psychology: "Phát triển từ Bullish Harami với cây nến thứ 3 đóng cửa cao hơn đỉnh nến con, xác nhận xu hướng đảo chiều hoàn tất.",
+                condition: "Nến 3 đóng cửa vượt hẳn đỉnh của nến 2.",
+                entry: "Ngay khi nến 3 đóng cửa",
+                sl: "Dưới đáy nến 1",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 13,
+                nameVi: "Ba Nến Bên Ngoài Tăng",
+                nameEn: "Three Outside Up",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [
+                    { type: "bear", body: 28, upperWick: 6, lowerWick: 6 },
+                    { type: "bull", body: 65, upperWick: 8, lowerWick: 8 },
+                    { type: "bull", body: 50, upperWick: 6, lowerWick: 6 }
+                ],
+                psychology: "Phát triển từ Bullish Engulfing và được nến thứ 3 tiếp sức đẩy đỉnh cao hơn nữa.",
+                condition: "Nến 2 là Engulfing, nến 3 tạo đỉnh cao mới.",
+                entry: "Đóng nến thứ 3",
+                sl: "Dưới đáy nến số 2",
+                tp: "Mục tiêu 1:2.5 đến 1:4"
+            },
+            {
+                id: 14,
+                nameVi: "Đứa Trẻ Bị Bỏ Rơi Tăng",
+                nameEn: "Abandoned Baby Bullish",
+                category: "bullish",
+                badge: "Đảo chiều hiếm & mạnh",
+                candles: [
+                    { type: "bear", body: 55, upperWick: 8, lowerWick: 8 },
+                    { type: "doji", body: 4, upperWick: 8, lowerWick: 8 },
+                    { type: "bull", body: 55, upperWick: 8, lowerWick: 8 }
+                ],
+                psychology: "Có khoảng nhảy giá (Gap) cả trước và sau cây nến Doji ở giữa. Tín hiệu đảo chiều cực mạnh ít khi xuất hiện.",
+                condition: "Nến Doji cô lập hoàn toàn không chạm vào bóng của 2 nến bên cạnh.",
+                entry: "Đóng nến 3",
+                sl: "Dưới đáy Gap nến Doji",
+                tp: "R:R 1:4"
+            },
+            {
+                id: 15,
+                nameVi: "Phản Công Tăng",
+                nameEn: "Bullish Counterattack",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [
+                    { type: "bear", body: 55, upperWick: 8, lowerWick: 8 },
+                    { type: "bull", body: 50, upperWick: 8, lowerWick: 8 }
+                ],
+                psychology: "Nến 2 mở gap giảm rất sâu nhưng phe mua lao vào đẩy giá đóng cửa bằng đúng mức đóng cửa của nến đỏ trước.",
+                condition: "Hai nến có mức giá đóng cửa tương đương nhau.",
+                entry: "Chờ nến tiếp theo phá đỉnh nến 2",
+                sl: "Dưới đáy nến 2",
+                tp: "R:R 1:2.5"
+            },
+            {
+                id: 16,
+                nameVi: "Chim Én Ẩn Mình",
+                nameEn: "Concealing Baby Swallow",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [
+                    { type: "bear", body: 60, upperWick: 2, lowerWick: 2 },
+                    { type: "bear", body: 55, upperWick: 2, lowerWick: 2 },
+                    { type: "bear", body: 25, upperWick: 25, lowerWick: 2 },
+                    { type: "bear", body: 50, upperWick: 5, lowerWick: 5 }
+                ],
+                psychology: "Bốn nến giảm kiệt quệ liên tiếp, nến cuối cùng nuốt trọn nến số 3, báo hiệu phe gấu đã hoàn toàn cạn kiệt thanh khoản bán.",
+                condition: "Mô hình 4 nến hiếm gặp tại đáy chu kỳ suy thoái.",
+                entry: "Sau khi nến 4 hoàn tất",
+                sl: "Dưới đáy nến 4",
+                tp: "Vùng cản trên"
+            },
+            {
+                id: 17,
+                nameVi: "Bậc Thang Dưới Đáy",
+                nameEn: "Ladder Bottom",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [
+                    { type: "bear", body: 40, upperWick: 5, lowerWick: 5 },
+                    { type: "bear", body: 40, upperWick: 5, lowerWick: 5 },
+                    { type: "bear", body: 40, upperWick: 5, lowerWick: 5 },
+                    { type: "bear", body: 20, upperWick: 25, lowerWick: 5 },
+                    { type: "bull", body: 60, upperWick: 8, lowerWick: 8 }
+                ],
+                psychology: "Sau 3 nến giảm đều đặn, nến thứ 4 có râu trên cao và nến thứ 5 đảo chiều thành nến xanh cực đại.",
+                condition: "Nến 5 bứt phá hẳn khỏi thân các nến trước.",
+                entry: "Đóng nến 5",
+                sl: "Dưới đáy toàn bộ cụm",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 18,
+                nameVi: "Đá Cầu Tăng",
+                nameEn: "Bullish Kicking",
+                category: "bullish",
+                badge: "Bùng nổ tăng",
+                candles: [
+                    { type: "bear", body: 70, upperWick: 2, lowerWick: 2 },
+                    { type: "bull", body: 70, upperWick: 2, lowerWick: 2 }
+                ],
+                psychology: "Một nến Marubozu đỏ sau đó nhảy khoảng gap vọt lên thành một cây Marubozu xanh. Sự thay đổi tâm lý 180 độ tức thì.",
+                condition: "Xuất hiện sau thông tin cơ bản chấn động tạo khoảng Gap giá lớn.",
+                entry: "Ngay khi nến xanh hình thành",
+                sl: "Dưới đáy nến xanh",
+                tp: "Theo sóng lớn"
+            },
+            {
+                id: 19,
+                nameVi: "Tam Tinh Tăng",
+                nameEn: "Tri-Star Bullish",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [
+                    { type: "doji", body: 4, upperWick: 15, lowerWick: 15 },
+                    { type: "doji", body: 4, upperWick: 18, lowerWick: 18 },
+                    { type: "doji", body: 4, upperWick: 15, lowerWick: 15 }
+                ],
+                psychology: "Ba nến Doji liên tiếp ở đáy thể hiện sự cân bằng giằng co đến cực hạn trước khi phe mua bứt tốc giành chiến thắng.",
+                condition: "Doji ở giữa tạo đáy thấp hơn 2 Doji bên cạnh.",
+                entry: "Chờ nến xanh H4 tiếp theo phá vỡ cụm Doji",
+                sl: "Dưới đáy Doji giữa",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 20,
+                nameVi: "Harami Chữ Thập Tăng",
+                nameEn: "Bullish Harami Cross",
+                category: "bullish",
+                badge: "Đảo chiều tăng",
+                candles: [
+                    { type: "bear", body: 65, upperWick: 8, lowerWick: 8 },
+                    { type: "doji", body: 4, upperWick: 12, lowerWick: 12 }
+                ],
+                psychology: "Nến con bên trong thân nến mẹ là một cây Doji hoàn hảo, cho thấy phe bán hoàn toàn bị 'đóng băng' hành động giá.",
+                condition: "Cây Doji lọt thỏm trong thân nến giảm.",
+                entry: "Phá vỡ đỉnh Doji",
+                sl: "Dưới đáy nến mẹ",
+                tp: "R:R 1:2.5"
+            },
+
+            // --- 20 MÔ HÌNH ĐẢO CHIỀU GIẢM (BEARISH REVERSAL) ---
+            {
+                id: 21,
+                nameVi: "Bắn Sao",
+                nameEn: "Shooting Star",
+                category: "bearish",
+                badge: "Đảo chiều giảm mạnh",
+                candles: [{ type: "bear", body: 24, upperWick: 55, lowerWick: 4 }],
+                psychology: "Phe mua cố sức đẩy giá lên cao kỷ lục nhưng phe bán ồ ạt dội lệnh xả, ép giá đóng cửa sát mức thấp nhất của 4 giờ.",
+                condition: "Bóng trên dài gấp 2-3 lần thân nến, xuất hiện tại đỉnh kháng cự H4.",
+                entry: "Đóng nến H4 Shooting Star",
+                sl: "Trên đỉnh râu nến bắn sao 5-10 pip",
+                tp: "Hỗ trợ gần nhất"
+            },
+            {
+                id: 22,
+                nameVi: "Người Treo Cổ",
+                nameEn: "Hanging Man",
+                category: "bearish",
+                badge: "Cảnh báo giảm",
+                candles: [{ type: "bear", body: 24, upperWick: 4, lowerWick: 52 }],
+                psychology: "Dù nhìn giống cây búa nhưng xuất hiện ở đỉnh. Râu dưới dài cho thấy phe bán đã bắt đầu thâm nhập sâu vào thị trường.",
+                condition: "Bắt buộc phải có nến đỏ tiếp theo trên H4 xác nhận thủng đáy cây nến này.",
+                entry: "Khi nến H4 tiếp theo phá đáy Hanging Man",
+                sl: "Trên đỉnh nến",
+                tp: "R:R 1:2.5"
+            },
+            {
+                id: 23,
+                nameVi: "Nhấn Chìm Giảm",
+                nameEn: "Bearish Engulfing",
+                category: "bearish",
+                badge: "Đảo chiều giảm mạnh",
+                candles: [
+                    { type: "bull", body: 35, upperWick: 10, lowerWick: 10 },
+                    { type: "bear", body: 70, upperWick: 8, lowerWick: 8 }
+                ],
+                psychology: "Nến đỏ khổng lồ nuốt trọn cây nến tăng trước đó, chứng minh phe gấu đã hoàn toàn nghiền nát phe bò.",
+                condition: "Thân nến đỏ trùm kín thân nến xanh tại vùng đỉnh.",
+                entry: "Đóng nến đỏ",
+                sl: "Trên đỉnh cây nến giảm",
+                tp: "Vùng hỗ trợ H4 bên dưới"
+            },
+            {
+                id: 24,
+                nameVi: "Mây Đen Bao Phủ",
+                nameEn: "Dark Cloud Cover",
+                category: "bearish",
+                badge: "Đảo chiều giảm",
+                candles: [
+                    { type: "bull", body: 60, upperWick: 10, lowerWick: 10 },
+                    { type: "bear", body: 55, upperWick: 10, lowerWick: 10 }
+                ],
+                psychology: "Nến 2 mở gap tăng nhưng ngay lập tức bị xả mạnh khiến giá đóng cửa thấp hơn 50% thân nến xanh trước.",
+                condition: "Giá đóng cửa nến đỏ phải vượt qua điểm giữa thân nến xanh.",
+                entry: "Đóng nến 2",
+                sl: "Trên đỉnh cao nhất",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 25,
+                nameVi: "Sao Hôm",
+                nameEn: "Evening Star",
+                category: "bearish",
+                badge: "Đảo chiều giảm uy tín",
+                candles: [
+                    { type: "bull", body: 60, upperWick: 10, lowerWick: 10 },
+                    { type: "doji", body: 10, upperWick: 15, lowerWick: 15 },
+                    { type: "bear", body: 55, upperWick: 10, lowerWick: 10 }
+                ],
+                psychology: "Bộ 3 nến H4 kinh điển: Tăng mạnh -> Ngập ngừng do dự -> Sụp đổ dứt khoát.",
+                condition: "Nến 3 là nến đỏ đóng sâu vào thân nến 1.",
+                entry: "Đóng nến thứ 3",
+                sl: "Trên đỉnh ngôi sao ở giữa",
+                tp: "Đáy sóng cũ"
+            },
+            {
+                id: 26,
+                nameVi: "Ba Con Quạ Đen",
+                nameEn: "Three Black Crows",
+                category: "bearish",
+                badge: "Đảo chiều giảm cực mạnh",
+                candles: [
+                    { type: "bear", body: 50, upperWick: 8, lowerWick: 8 },
+                    { type: "bear", body: 52, upperWick: 8, lowerWick: 8 },
+                    { type: "bear", body: 55, upperWick: 8, lowerWick: 8 }
+                ],
+                psychology: "Ba nến đỏ liên tiếp với thân dài và giá đóng cửa tạo đáy mới liên tục. Áp lực bán tháo lan rộng.",
+                condition: "Mỗi nến mở cửa bên trong thân nến trước và đóng cửa gần mức thấp nhất.",
+                entry: "Đóng nến thứ 3 hoặc chờ nến test nhẹ",
+                sl: "Trên đỉnh nến số 1",
+                tp: "R:R 1:3.5"
+            },
+            {
+                id: 27,
+                nameVi: "Đỉnh Nhíp",
+                nameEn: "Tweezer Top",
+                category: "bearish",
+                badge: "Đảo chiều giảm",
+                candles: [
+                    { type: "bull", body: 40, upperWick: 35, lowerWick: 8 },
+                    { type: "bear", body: 40, upperWick: 35, lowerWick: 8 }
+                ],
+                psychology: "Hai nến H4 liên tiếp không thể vượt qua cùng một mức kháng cự giá cao, râu trên dài tạo thành thế gọng kìm từ chối giá.",
+                condition: "Hai đỉnh nến cao bằng nhau tại kháng cự mạnh.",
+                entry: "Đóng nến đỏ số 2",
+                sl: "Trên 2 đỉnh nhíp 5 pip",
+                tp: "Hỗ trợ gần nhất"
+            },
+            {
+                id: 28,
+                nameVi: "Mẹ Bồng Con Giảm",
+                nameEn: "Bearish Harami",
+                category: "bearish",
+                badge: "Đảo chiều giảm",
+                candles: [
+                    { type: "bull", body: 70, upperWick: 10, lowerWick: 10 },
+                    { type: "bear", body: 25, upperWick: 6, lowerWick: 6 }
+                ],
+                psychology: "Đà tăng bị phanh gấp bởi một nến đỏ nhỏ lọt thỏm trong thân nến xanh khổng lồ trước đó.",
+                condition: "Thân nến 2 nằm gọn bên trong thân nến 1.",
+                entry: "Chờ nến thứ 3 phá thủng đáy nến 2",
+                sl: "Trên đỉnh nến mẹ",
+                tp: "R:R 1:2.5"
+            },
+            {
+                id: 29,
+                nameVi: "Doji Bia Mộ",
+                nameEn: "Gravestone Doji",
+                category: "bearish",
+                badge: "Đảo chiều giảm mạnh",
+                candles: [{ type: "doji", body: 4, upperWick: 65, lowerWick: 2 }],
+                psychology: "Giá mở cửa, thấp nhất và đóng cửa đều ở sát đáy. Râu trên siêu dài thể hiện toàn bộ nỗ lực mua đã bị 'chôn vùi'.",
+                condition: "Xuất hiện sau đợt tăng nóng trên H4.",
+                entry: "Đóng nến Doji bia mộ",
+                sl: "Trên đỉnh râu nến",
+                tp: "Hỗ trợ khung D1/H4"
+            },
+            {
+                id: 30,
+                nameVi: "Marubozu Giảm",
+                nameEn: "Bearish Marubozu",
+                category: "bearish",
+                badge: "Lực xả tuyệt đối",
+                candles: [{ type: "bear", body: 80, upperWick: 2, lowerWick: 2 }],
+                psychology: "Cây nến đỏ đặc quánh không có bóng nến. Phe gấu kiểm soát áp đảo 100% thời gian của phiên H4.",
+                condition: "Báo hiệu phá vỡ hỗ trợ (breakdown) cực mạnh.",
+                entry: "Mở vị thế Bán theo quán tính nến",
+                sl: "Trên mức mở cửa cây Marubozu",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 31,
+                nameVi: "Sao Doji Buổi Chiều",
+                nameEn: "Evening Doji Star",
+                category: "bearish",
+                badge: "Đảo chiều giảm",
+                candles: [
+                    { type: "bull", body: 60, upperWick: 10, lowerWick: 10 },
+                    { type: "doji", body: 2, upperWick: 15, lowerWick: 15 },
+                    { type: "bear", body: 55, upperWick: 10, lowerWick: 10 }
+                ],
+                psychology: "Biến thể của Evening Star nhưng ngôi sao ở giữa là Doji cho thấy sự giằng co và hụt hơi rõ rệt của phe bò.",
+                condition: "Nến 3 lao dốc mạnh sau cây Doji.",
+                entry: "Đóng nến 3",
+                sl: "Trên đỉnh Doji",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 32,
+                nameVi: "Ba Nến Bên Trong Giảm",
+                nameEn: "Three Inside Down",
+                category: "bearish",
+                badge: "Đảo chiều giảm",
+                candles: [
+                    { type: "bull", body: 65, upperWick: 8, lowerWick: 8 },
+                    { type: "bear", body: 28, upperWick: 6, lowerWick: 6 },
+                    { type: "bear", body: 50, upperWick: 6, lowerWick: 6 }
+                ],
+                psychology: "Phát triển từ Bearish Harami với nến 3 đóng cửa thủng đáy nến 2, xác nhận lực xả kích hoạt.",
+                condition: "Nến 3 phá vỡ đáy nến con.",
+                entry: "Đóng nến 3",
+                sl: "Trên đỉnh nến 1",
+                tp: "R:R 1:2.5"
+            },
+            {
+                id: 33,
+                nameVi: "Ba Nến Bên Ngoài Giảm",
+                nameEn: "Three Outside Down",
+                category: "bearish",
+                badge: "Đảo chiều giảm",
+                candles: [
+                    { type: "bull", body: 28, upperWick: 6, lowerWick: 6 },
+                    { type: "bear", body: 65, upperWick: 8, lowerWick: 8 },
+                    { type: "bear", body: 50, upperWick: 6, lowerWick: 6 }
+                ],
+                psychology: "Nến 2 Bearish Engulfing được tiếp lửa bởi nến 3 tiếp tục tạo đáy mới thấp hơn.",
+                condition: "Nến 3 đóng cửa thấp hơn đáy nến 2.",
+                entry: "Đóng nến 3",
+                sl: "Trên đỉnh nến 2",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 34,
+                nameVi: "Đứa Trẻ Bị Bỏ Rơi Giảm",
+                nameEn: "Abandoned Baby Bearish",
+                category: "bearish",
+                badge: "Đảo chiều hiếm & mạnh",
+                candles: [
+                    { type: "bull", body: 55, upperWick: 8, lowerWick: 8 },
+                    { type: "doji", body: 4, upperWick: 8, lowerWick: 8 },
+                    { type: "bear", body: 55, upperWick: 8, lowerWick: 8 }
+                ],
+                psychology: "Doji ở đỉnh bị cô lập bởi 2 khoảng gap giá. Tín hiệu đảo chiều đỉnh cực kỳ uy tín.",
+                condition: "Khoảng trống giá rõ rệt giữa nến Doji và 2 nến bên cạnh.",
+                entry: "Đóng nến 3",
+                sl: "Trên đỉnh Doji",
+                tp: "R:R 1:4"
+            },
+            {
+                id: 35,
+                nameVi: "Phản Công Giảm",
+                nameEn: "Bearish Counterattack",
+                category: "bearish",
+                badge: "Đảo chiều giảm",
+                candles: [
+                    { type: "bull", body: 55, upperWick: 8, lowerWick: 8 },
+                    { type: "bear", body: 50, upperWick: 8, lowerWick: 8 }
+                ],
+                psychology: "Nến 2 mở gap tăng nhưng lực bán đè bẹp giá đóng cửa về đúng mức đóng của cây nến xanh trước đó.",
+                condition: "Giá đóng cửa 2 nến tương đương nhau ở vùng đỉnh.",
+                entry: "Chờ nến tiếp theo phá đáy nến 2",
+                sl: "Trên đỉnh nến 2",
+                tp: "R:R 1:2.5"
+            },
+            {
+                id: 36,
+                nameVi: "Đoàn Quân Bị Chặn",
+                nameEn: "Advance Block",
+                category: "bearish",
+                badge: "Hụt hơi tăng",
+                candles: [
+                    { type: "bull", body: 60, upperWick: 6, lowerWick: 6 },
+                    { type: "bull", body: 35, upperWick: 25, lowerWick: 6 },
+                    { type: "bull", body: 15, upperWick: 35, lowerWick: 6 }
+                ],
+                psychology: "Ba nến tăng nhưng thân nến ngày càng teo nhỏ lại và bóng trên ngày càng dài, báo hiệu lực mua sắp cạn pin.",
+                condition: "Thân nến thu hẹp dần và râu trên mở rộng về sau.",
+                entry: "Chờ nến đỏ đầu tiên xuất hiện để Sell",
+                sl: "Trên đỉnh cao nhất",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 37,
+                nameVi: "Mô Hình Lưỡng Lự Đỉnh",
+                nameEn: "Deliberation Pattern",
+                category: "bearish",
+                badge: "Cảnh báo đảo chiều",
+                candles: [
+                    { type: "bull", body: 55, upperWick: 8, lowerWick: 8 },
+                    { type: "bull", body: 50, upperWick: 8, lowerWick: 8 },
+                    { type: "bull", body: 12, upperWick: 15, lowerWick: 15 }
+                ],
+                psychology: "Sau 2 nến tăng dài, nến thứ 3 đột ngột thu nhỏ thành một ngôi sao nhỏ mở gap. Phe mua mất tự tin.",
+                condition: "Nến 3 có thân cực nhỏ sau 2 cây nến khỏe.",
+                entry: "Sell khi nến tiếp theo đóng đỏ",
+                sl: "Trên đỉnh nến 3",
+                tp: "R:R 1:2.5"
+            },
+            {
+                id: 38,
+                nameVi: "Đá Cầu Giảm",
+                nameEn: "Bearish Kicking",
+                category: "bearish",
+                badge: "Bùng nổ giảm",
+                candles: [
+                    { type: "bull", body: 70, upperWick: 2, lowerWick: 2 },
+                    { type: "bear", body: 70, upperWick: 2, lowerWick: 2 }
+                ],
+                psychology: "Cây xanh Marubozu sau đó nhảy gap rớt thành cây đỏ Marubozu. Dòng tiền đảo chiều đột ngột.",
+                condition: "Xuất hiện khoảng gap giảm lớn giữa 2 nến thân dài.",
+                entry: "Ngay khi nến đỏ hình thành",
+                sl: "Trên đỉnh nến đỏ",
+                tp: "Theo sóng giảm lớn"
+            },
+            {
+                id: 39,
+                nameVi: "Tam Tinh Giảm",
+                nameEn: "Tri-Star Bearish",
+                category: "bearish",
+                badge: "Đảo chiều giảm",
+                candles: [
+                    { type: "doji", body: 4, upperWick: 15, lowerWick: 15 },
+                    { type: "doji", body: 4, upperWick: 18, lowerWick: 18 },
+                    { type: "doji", body: 4, upperWick: 15, lowerWick: 15 }
+                ],
+                psychology: "Ba nến Doji xuất hiện trên đỉnh. Thị trường kiệt sức và chuẩn bị rơi tự do.",
+                condition: "Doji thứ 2 tạo đỉnh cao nhất cụm.",
+                entry: "Sell khi nến sau phá thủng cụm Doji",
+                sl: "Trên đỉnh Doji giữa",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 40,
+                nameVi: "Harami Chữ Thập Giảm",
+                nameEn: "Bearish Harami Cross",
+                category: "bearish",
+                badge: "Đảo chiều giảm",
+                candles: [
+                    { type: "bull", body: 65, upperWick: 8, lowerWick: 8 },
+                    { type: "doji", body: 4, upperWick: 12, lowerWick: 12 }
+                ],
+                psychology: "Nến Doji nằm gọn trong nến xanh trước đó, cảnh báo đà tăng đã chết đứng.",
+                condition: "Doji lọt hoàn toàn trong thân nến mẹ.",
+                entry: "Phá thủng đáy nến Doji",
+                sl: "Trên đỉnh nến mẹ",
+                tp: "R:R 1:2.5"
+            },
+
+            // --- 10 MÔ HÌNH TIẾP DIỄN & TRUNG LẬP (CONTINUATION & NEUTRAL) ---
+            {
+                id: 41,
+                nameVi: "Doji Tiêu Chuẩn",
+                nameEn: "Doji Neutral",
+                category: "continuation",
+                badge: "Trung lập / Giằng co",
+                candles: [{ type: "doji", body: 2, upperWick: 25, lowerWick: 25 }],
+                psychology: "Giá mở cửa và đóng cửa trùng nhau. Sự cân bằng cung cầu tuyệt đối sau 4 giờ giao dịch.",
+                condition: "Chưa giao dịch ngay, cần quan sát nến H4 tiếp theo bứt phá về hướng nào.",
+                entry: "Đợi nến breakout sau Doji",
+                sl: "Phía đối diện của nến Doji",
+                tp: "Theo hướng bứt phá"
+            },
+            {
+                id: 42,
+                nameVi: "Doji Chân Dài",
+                nameEn: "Long-Legged Doji",
+                category: "continuation",
+                badge: "Biến động mạnh",
+                candles: [{ type: "doji", body: 2, upperWick: 55, lowerWick: 55 }],
+                psychology: "Biên độ co giật cực lớn trong 4 giờ nhưng cuối cùng kết phiên ở vị trí ban đầu. Thể hiện sự hỗn loạn của thị trường.",
+                condition: "Thường xuất hiện trước thềm tin tức CPI hoặc lãi suất.",
+                entry: "Đứng ngoài thị trường chờ ổn định",
+                sl: "Ngoại vi biên độ nến",
+                tp: "Cản gần nhất"
+            },
+            {
+                id: 43,
+                nameVi: "Nến Con Xoay",
+                nameEn: "Spinning Top",
+                category: "continuation",
+                badge: "Tạm dừng xu hướng",
+                candles: [{ type: "neutral", body: 16, upperWick: 28, lowerWick: 28 }],
+                psychology: "Thân nến nhỏ nằm ở giữa 2 bóng nến đều nhau. Cả phe mua lẫn bán đều không thể đẩy thị trường đi xa.",
+                condition: "Trong xu hướng mạnh, nến này đóng vai trò nốt nghỉ trước khi giá chạy tiếp.",
+                entry: "Đặt lệnh Stop theo xu hướng mẹ",
+                sl: "Phía đối diện con xoay",
+                tp: "R:R 1:2.5"
+            },
+            {
+                id: 44,
+                nameVi: "Nến Sóng Cao",
+                nameEn: "High Wave Candle",
+                category: "continuation",
+                badge: "Cực kỳ bất định",
+                candles: [{ type: "neutral", body: 14, upperWick: 50, lowerWick: 50 }],
+                psychology: "Tương tự Spinning Top nhưng có cả 2 râu siêu dài. Thị trường mất phương hướng tạm thời.",
+                condition: "Báo hiệu xu hướng sắp chậm lại để tái phân phối.",
+                entry: "Chờ cấu trúc H4 mới định hình",
+                sl: "Theo đỉnh/đáy râu nến",
+                tp: "R:R 1:2"
+            },
+            {
+                id: 45,
+                nameVi: "Tăng Giá Ba Bước",
+                nameEn: "Rising Three Methods",
+                category: "continuation",
+                badge: "Tiếp diễn tăng mạnh",
+                candles: [
+                    { type: "bull", body: 65, upperWick: 6, lowerWick: 6 },
+                    { type: "bear", body: 18, upperWick: 4, lowerWick: 4 },
+                    { type: "bear", body: 18, upperWick: 4, lowerWick: 4 },
+                    { type: "bear", body: 18, upperWick: 4, lowerWick: 4 },
+                    { type: "bull", body: 70, upperWick: 6, lowerWick: 6 }
+                ],
+                psychology: "Cây nến tăng dài được theo sau bởi 3 nến giảm nhỏ nằm gọn trong nến 1, sau đó nến thứ 5 xanh mạnh vượt đỉnh khẳng định đà tăng tiếp diễn.",
+                condition: "Ba cây nến nhỏ không được phá vỡ đáy cây nến xanh đầu tiên.",
+                entry: "Đóng nến xanh thứ 5",
+                sl: "Dưới đáy cây nến xanh thứ 1",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 46,
+                nameVi: "Giảm Giá Ba Bước",
+                nameEn: "Falling Three Methods",
+                category: "continuation",
+                badge: "Tiếp diễn giảm mạnh",
+                candles: [
+                    { type: "bear", body: 65, upperWick: 6, lowerWick: 6 },
+                    { type: "bull", body: 18, upperWick: 4, lowerWick: 4 },
+                    { type: "bull", body: 18, upperWick: 4, lowerWick: 4 },
+                    { type: "bull", body: 18, upperWick: 4, lowerWick: 4 },
+                    { type: "bear", body: 70, upperWick: 6, lowerWick: 6 }
+                ],
+                psychology: "Cây đỏ dài, 3 cây xanh nhỏ hồi quy giả tạo và bị cây đỏ thứ 5 bóp nghẹt tạo đáy mới.",
+                condition: "Ba nến nhỏ nằm gọn trong thân nến đỏ số 1.",
+                entry: "Đóng nến đỏ thứ 5",
+                sl: "Trên đỉnh nến đỏ số 1",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 47,
+                nameVi: "Khoảng Trống Tasuki Tăng",
+                nameEn: "Upside Tasuki Gap",
+                category: "continuation",
+                badge: "Tiếp diễn tăng",
+                candles: [
+                    { type: "bull", body: 45, upperWick: 6, lowerWick: 6 },
+                    { type: "bull", body: 45, upperWick: 6, lowerWick: 6 },
+                    { type: "bear", body: 25, upperWick: 4, lowerWick: 4 }
+                ],
+                psychology: "Nến 2 nhảy gap tăng so với nến 1. Nến 3 điều chỉnh giảm đóng vào khoảng gap nhưng không lấp kín gap, xác nhận lực mua còn dồi dào.",
+                condition: "Nến 3 không đóng cửa dưới mức mở cửa của nến 2.",
+                entry: "Mua khi nến tiếp theo bật tăng trở lại",
+                sl: "Dưới đáy khoảng Gap",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 48,
+                nameVi: "Khoảng Trống Tasuki Giảm",
+                nameEn: "Downside Tasuki Gap",
+                category: "continuation",
+                badge: "Tiếp diễn giảm",
+                candles: [
+                    { type: "bear", body: 45, upperWick: 6, lowerWick: 6 },
+                    { type: "bear", body: 45, upperWick: 6, lowerWick: 6 },
+                    { type: "bull", body: 25, upperWick: 4, lowerWick: 4 }
+                ],
+                psychology: "Nến 2 nhảy gap rơi xuống. Nến 3 hồi phục nhưng không thể lấp đầy khoảng trống giảm trước đó.",
+                condition: "Gap giảm vẫn được bảo vệ nguyên vẹn.",
+                entry: "Bán khi giá thủng đáy nến 2",
+                sl: "Trên đỉnh khoảng Gap",
+                tp: "R:R 1:3"
+            },
+            {
+                id: 49,
+                nameVi: "Chiếu Nghỉ Tăng Giá",
+                nameEn: "Mat Hold",
+                category: "continuation",
+                badge: "Tiếp diễn tăng siêu mạnh",
+                candles: [
+                    { type: "bull", body: 60, upperWick: 6, lowerWick: 6 },
+                    { type: "bear", body: 15, upperWick: 4, lowerWick: 4 },
+                    { type: "bear", body: 15, upperWick: 4, lowerWick: 4 },
+                    { type: "bear", body: 15, upperWick: 4, lowerWick: 4 },
+                    { type: "bull", body: 65, upperWick: 6, lowerWick: 6 }
+                ],
+                psychology: "Gần giống Rising Three Methods nhưng các nến nhỏ duy trì ở mức giá cao hơn, chứng tỏ phe bán quá yếu ớt.",
+                condition: "Một trong những mô hình tiếp diễn tăng có tỷ lệ thắng cao nhất thị trường.",
+                entry: "Đóng nến số 5",
+                sl: "Dưới đáy nến con thấp nhất",
+                tp: "R:R 1:3.5"
+            },
+            {
+                id: 50,
+                nameVi: "Đường Phân Tách Tăng",
+                nameEn: "Separating Lines Bullish",
+                category: "continuation",
+                badge: "Tiếp diễn tăng",
+                candles: [
+                    { type: "bear", body: 50, upperWick: 6, lowerWick: 6 },
+                    { type: "bull", body: 60, upperWick: 6, lowerWick: 6 }
+                ],
+                psychology: "Nến 2 mở cửa ở đúng mức mở cửa của nến đỏ trước đó và tăng vọt thẳng lên, xóa sổ hoàn toàn ảnh hưởng của phe gấu.",
+                condition: "Mức mở cửa của 2 nến phải trùng nhau trong xu hướng tăng.",
+                entry: "Đóng nến xanh",
+                sl: "Dưới đáy nến 2",
+                tp: "R:R 1:2.5"
+            }
+        ];
+
+        // Quản lý trạng thái bộ lọc và tìm kiếm
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        // Hàm render nến SVG / CSS thu nhỏ
+        function renderCandleIllustration(candles, isLarge = false) {
+            const h = isLarge ? 110 : 70;
+            const candleWidth = isLarge ? 22 : 14;
+
+            let html = `<div class="flex items-center justify-center space-x-2 h-[${h}px] py-1">`;
+            candles.forEach(c => {
+                let colorClass = 'bg-emerald-500 text-emerald-400';
+                if (c.type === 'bear') colorClass = 'bg-rose-500 text-rose-400';
+                if (c.type === 'doji' || c.type === 'neutral') colorClass = 'bg-cyan-400 text-cyan-400';
+
+                const upperH = (c.upperWick * (isLarge ? 0.7 : 0.45));
+                const bodyH = Math.max(c.body * (isLarge ? 0.7 : 0.45), isLarge ? 4 : 3);
+                const lowerH = (c.lowerWick * (isLarge ? 0.7 : 0.45));
+
+                html += `
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="w-[2px] bg-slate-400" style="height: ${upperH}px"></div>
+                        <div class="rounded-sm ${colorClass} shadow-sm" style="width: ${candleWidth}px; height: ${bodyH}px"></div>
+                        <div class="w-[2px] bg-slate-400" style="height: ${lowerH}px"></div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            return html;
+        }
+
+        // Render toàn bộ Card 50 nến
+        function renderGrid() {
+            const grid = document.getElementById('candle-grid');
+            const zeroResult = document.getElementById('zero-result');
+            grid.innerHTML = '';
+
+            const filtered = CANDLE_DATA.filter(item => {
+                const matchCategory = (currentCategory === 'all') || (item.category === currentCategory);
+                const matchSearch = item.nameVi.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                    item.nameEn.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchCategory && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                zeroResult.classList.remove('hidden');
+                return;
+            } else {
+                zeroResult.classList.add('hidden');
+            }
+
+            filtered.forEach(item => {
+                let borderBadge = 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10';
+                let glowHover = 'hover:border-emerald-500/60';
+                if (item.category === 'bearish') {
+                    borderBadge = 'border-rose-500/30 text-rose-400 bg-rose-500/10';
+                    glowHover = 'hover:border-rose-500/60';
+                } else if (item.category === 'continuation') {
+                    borderBadge = 'border-cyan-500/30 text-cyan-400 bg-cyan-500/10';
+                    glowHover = 'hover:border-cyan-500/60';
+                }
+
+                const card = document.createElement('div');
+                card.className = `bg-cardBg border border-cardBorder rounded-2xl p-5 hover:-translate-y-1 transition-all duration-300 ${glowHover} shadow-xl flex flex-col justify-between cursor-pointer group`;
+                card.onclick = () => openPatternModal(item.id);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] font-mono-code font-bold text-slate-500">#${String(item.id).padStart(2, '0')}</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${borderBadge}">
+                                ${item.badge}
+                            </span>
+                        </div>
+
+                        <!-- Candle Graphic Miniature -->
+                        <div class="bg-slate-950/70 rounded-xl p-3 border border-cardBorder mb-4 group-hover:border-slate-700 transition-colors">
+                            ${renderCandleIllustration(item.candles, false)}
+                        </div>
+
+                        <h3 class="text-base font-bold text-white group-hover:text-cyanAccent transition-colors leading-snug">
+                            ${item.nameVi}
+                        </h3>
+                        <div class="text-xs text-slate-400 font-medium mb-3">
+                            ${item.nameEn}
+                        </div>
+
+                        <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                            ${item.psychology}
+                        </p>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-cardBorder flex items-center justify-between text-[11px] text-cyanAccent font-semibold">
+                        <span>Chi tiết setup H4</span>
+                        <i class="fa-solid fa-arrow-right text-[10px] transform group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Đổi Tab lọc
+        function setCandleFilter(category) {
+            currentCategory = category;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.getAttribute('data-cat') === category) {
+                    btn.className = "cat-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-cyanAccent text-black shadow-md shadow-cyanAccent/20";
+                } else {
+                    btn.className = "cat-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-slate-900 text-slate-300 hover:text-white border border-cardBorder";
+                }
+            });
+            renderGrid();
+        }
+
+        // Xử lý ô tìm kiếm
+        function handleSearch() {
+            searchQuery = document.getElementById('pattern-search').value.trim();
+            renderGrid();
+        }
+
+        function resetSearch() {
+            document.getElementById('pattern-search').value = '';
+            searchQuery = '';
+            renderGrid();
+        }
+
+        // Modal chi tiết
+        function openPatternModal(id) {
+            const item = CANDLE_DATA.find(x => x.id === id);
+            if (!item) return;
+
+            document.getElementById('modal-title-vi').innerText = item.nameVi;
+            document.getElementById('modal-title-en').innerText = item.nameEn;
+            document.getElementById('modal-psychology').innerText = item.psychology;
+            document.getElementById('modal-condition').innerText = item.condition;
+            document.getElementById('modal-entry').innerText = item.entry;
+            document.getElementById('modal-sl').innerText = item.sl;
+            document.getElementById('modal-tp').innerText = item.tp;
+
+            const badgeEl = document.getElementById('modal-badge');
+            badgeEl.innerText = item.badge;
+            if (item.category === 'bullish') {
+                badgeEl.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+            } else if (item.category === 'bearish') {
+                badgeEl.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-500/20 text-rose-400 border border-rose-500/30";
+            } else {
+                badgeEl.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-cyan-500/20 text-cyan-400 border border-cyan-500/30";
+            }
+
+            document.getElementById('modal-diagram-container').innerHTML = renderCandleIllustration(item.candles, true);
+            document.getElementById('pattern-modal').classList.remove('hidden');
+        }
+
+        function closePatternModal() {
+            document.getElementById('pattern-modal').classList.add('hidden');
+        }
+
+        // Close modal on click backdrop
+        document.getElementById('pattern-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'pattern-modal') closePatternModal();
+        });
+
+        // Máy tính Quản lý rủi ro & Position Sizing
+        function calculateRisk() {
+            const equity = parseFloat(document.getElementById('calc-equity').value) || 0;
+            const riskPct = parseFloat(document.getElementById('calc-risk').value) || 0;
+            const slPips = parseFloat(document.getElementById('calc-sl').value) || 0;
+            const tpPips = parseFloat(document.getElementById('calc-tp').value) || 0;
+
+            if (equity <= 0 || riskPct <= 0 || slPips <= 0) return;
+
+            const riskAmount = equity * (riskPct / 100);
+            // Chuẩn 1 Lot Forex: 1 pip dao động ~ $10
+            const lot = riskAmount / (slPips * 10);
+            const rewardAmount = (tpPips > 0) ? (lot * tpPips * 10) : 0;
+            const rrRatio = (slPips > 0) ? (tpPips / slPips).toFixed(1) : "0.0";
+
+            document.getElementById('out-risk-usd').innerText = '$' + riskAmount.toFixed(2);
+            document.getElementById('out-lot').innerText = lot.toFixed(2) + ' Lot';
+            document.getElementById('out-reward-usd').innerText = '+$' + rewardAmount.toFixed(2);
+            document.getElementById('out-rr').innerText = '1 : ' + rrRatio;
+        }
+
+        // QUIZ DATA & LOGIC (5 CÂU)
+        const QUIZ_QUESTIONS = [
+            {
+                q: "1. Tại sao các nến rút chân (Pin Bar) trên khung H4 lại có độ tin cậy cao hơn nhiều so với khung M5?",
+                options: [
+                    "Vì khung H4 có ít người giao dịch hơn nên ít bị làm giá",
+                    "Vì nến H4 đại diện cho 4 tiếng giao dịch, phản ánh thanh khoản và nỗ lực thực sự của dòng tiền lớn (Smart Money)",
+                    "Vì nến H4 luôn luôn đi theo tin tức tức thời",
+                    "Vì khung H4 không chịu phí Spread của sàn giao dịch"
+                ],
+                correct: 1,
+                explain: "Nến H4 tích tụ thanh khoản trong 240 phút, giúp triệt tiêu các biến động ngẫu nhiên và cạm bẫy quét thanh khoản ngắn hạn."
+            },
+            {
+                q: "2. Chu kỳ giờ đóng nến H4 nào sau đây quan trọng nhất đối với thị trường Ngoại hối và Vàng (giờ VN)?",
+                options: [
+                    "01:00 sáng và 05:00 sáng",
+                    "09:00 sáng (mở phiên Á)",
+                    "17:00 và 21:00 (thời điểm giao thoa và cao điểm giữa phiên Luân Đôn và New York)",
+                    "13:00 chiều"
+                ],
+                correct: 2,
+                explain: "17:00 và 21:00 UTC+7 là lúc phiên Âu và phiên Mỹ hoạt động mạnh nhất, khối lượng giao dịch đạt đỉnh trong ngày."
+            },
+            {
+                q: "3. Khi gặp mô hình Bullish Engulfing trên H4, vị trí đặt Dừng lỗ (Stop Loss) an toàn và chuẩn quy tắc Price Action là ở đâu?",
+                options: [
+                    "Ngay tại điểm mở cửa của nến thứ 2",
+                    "Cách râu nến thấp nhất của cụm nến từ 5 - 10 pip",
+                    "Không cần đặt SL nếu đã có tín hiệu nến mạnh",
+                    "Đặt tại giá trung bình của nến đỏ trước đó"
+                ],
+                correct: 1,
+                explain: "Luôn đặt Stop Loss dưới đáy thấp nhất của toàn bộ cụm nến (cộng thêm biên độ trượt giá 5-10 pip) để tránh bị quét râu."
+            },
+            {
+                q: "4. Mô hình 'Sao Mai' (Morning Star) chuẩn gồm bộ 3 nến H4 có cấu trúc thế nào?",
+                options: [
+                    "Nến xanh dài -> Doji -> Nến đỏ dài",
+                    "Nến đỏ dài -> Nến thân nhỏ/Doji ở đáy -> Nến xanh dài đóng sâu vào nến đỏ đầu",
+                    "Ba nến đỏ liên tiếp có đáy bằng nhau",
+                    "Nến xanh bao trùm hoàn toàn nến đỏ trước"
+                ],
+                correct: 1,
+                explain: "Morning Star thể hiện sự chuyển giao hoàn hảo: phe bán chiếm ưu thế -> kiệt sức do dự -> phe mua phản công áp đảo."
+            },
+            {
+                q: "5. Tỷ lệ Rủi ro : Lợi nhuận (R:R) khuyến nghị tối thiểu cho các thiết lập nến H4 là bao nhiêu?",
+                options: [
+                    "1 : 0.5 (Chốt non)",
+                    "1 : 1",
+                    "Tối thiểu từ 1 : 2.5 đến 1 : 3 trở lên",
+                    "Không quan trọng tỷ lệ R:R"
+                ],
+                correct: 2,
+                explain: "Lợi thế lớn nhất của nến H4 là bắt được các con sóng dài hàng trăm pip, cho phép bạn đạt R:R từ 1:2.5 đến 1:5."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        function renderQuizQuestion() {
+            const container = document.getElementById('quiz-card');
+            const data = QUIZ_QUESTIONS[quizIndex];
+            const pct = ((quizIndex + 1) / QUIZ_QUESTIONS.length) * 100;
+            document.getElementById('quiz-progress').style.width = pct + '%';
+
+            let optionsHtml = '';
+            data.options.forEach((opt, idx) => {
+                optionsHtml += `
+                    <label class="flex items-start space-x-3 p-4 rounded-xl bg-slate-900 border border-cardBorder hover:border-cyan-500/50 cursor-pointer transition-all">
+                        <input type="radio" name="quiz_opt" value="${idx}" class="mt-1 text-cyanAccent focus:ring-0">
+                        <span class="text-sm text-slate-300 font-medium">${opt}</span>
+                    </label>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-xs font-bold text-cyanAccent uppercase tracking-widest">Câu hỏi ${quizIndex + 1} / 5</span>
+                    <span class="text-xs text-slate-500 font-mono-code">${Math.round(pct)}%</span>
+                </div>
+                <h3 class="text-base sm:text-lg font-bold text-white mb-6 leading-snug">${data.q}</h3>
+                <div class="space-y-3 mb-8">${optionsHtml}</div>
+                <div class="flex justify-end">
+                    <button onclick="submitQuizAnswer()" class="px-7 py-3 rounded-xl bg-cyanAccent text-black font-extrabold text-xs uppercase tracking-wider hover:brightness-110 transition-all shadow-lg shadow-cyanAccent/20">
+                        ${(quizIndex === QUIZ_QUESTIONS.length - 1) ? 'Xem kết quả' : 'Câu tiếp theo'}
+                    </button>
+                </div>
+            `;
+        }
+
+        function submitQuizAnswer() {
+            const selected = document.querySelector('input[name="quiz_opt"]:checked');
+            if (!selected) {
+                // Highlight feedback
+                alert('Vui lòng chọn 1 đáp án để tiếp tục!');
+                return;
+            }
+
+            if (parseInt(selected.value) === QUIZ_QUESTIONS[quizIndex].correct) {
+                quizScore++;
+            }
+
+            if (quizIndex < QUIZ_QUESTIONS.length - 1) {
+                quizIndex++;
+                renderQuizQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-card').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+
+            const title = document.getElementById('quiz-result-title');
+            const desc = document.getElementById('quiz-result-desc');
+
+            desc.innerText = `Bạn đã trả lời chính xác ${quizScore} / ${QUIZ_QUESTIONS.length} câu hỏi.`;
+            if (quizScore >= 4) {
+                title.innerText = "Xuất sắc! Bạn đã có tư duy Price Action H4 rất tốt!";
+                title.className = "text-2xl font-black text-emerald-400 mb-2";
+            } else {
+                title.innerText = "Cần củng cố thêm kiến thức nến H4!";
+                title.className = "text-2xl font-black text-cyanAccent mb-2";
+            }
+        }
+
+        function restartQuiz() {
+            quizIndex = 0;
+            quizScore = 0;
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-card').classList.remove('hidden');
+            renderQuizQuestion();
+        }
+
+        // Mobile Nav Toggle
+        document.getElementById('mobile-toggle-btn').addEventListener('click', () => {
+            document.getElementById('mobile-nav').classList.toggle('hidden');
+        });
+        document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-nav').classList.add('hidden');
+            });
+        });
+
+        // Newsletter Toast Notification
+        function handleSubscribe() {
+            alert("Cảm ơn bạn! Hệ thống đã ghi nhận email để gửi setup H4 mỗi ngày.");
+        }
+
+        // Init Onload
+        window.addEventListener('DOMContentLoaded', () => {
+            renderGrid();
+            renderQuizQuestion();
+            calculateRisk();
+        });
+    </script>
+</body>
+</html>
